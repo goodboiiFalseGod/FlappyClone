@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be041b95b0d38b4a9bcee049a0f45b7, type: 3}
   m_Name: GameSettings
   m_EditorClassIdentifier: 
-  _columnInterval: 11
+  _columnInterval: 10
   _gameSpeed: 7
   _gameDifficulty: 5
-  _windowSize: 8
+  _windowSize: 7
