@@ -6,10 +6,9 @@ public class Initilizer : MonoBehaviour
 {
     [SerializeField] private GameSettings _gameSettings;
     [SerializeField] private ColumnSpawner _columnSpawner;
-    [SerializeField] private Player _player;
-    [SerializeField] private GameLogic _logic;
+    [SerializeField] private PlayerMovement _player;
 
-    static Dictionary<Corners, Vector2> corners;
+    static Dictionary<Corner, Vector2> corners;
 
     public void Start()
     {
@@ -17,7 +16,7 @@ public class Initilizer : MonoBehaviour
         
     }
 
-    public static Dictionary<Corners, Vector2> GetCorners()
+    public static Vector2 GetCornerPosition(Corner corner)
     {
         if (corners == null)
         {
@@ -32,13 +31,13 @@ public class Initilizer : MonoBehaviour
             Vector2 lowerLeft = Camera.main.ScreenToWorldPoint(lowerLeftScreen);
             Vector2 lowerRight = Camera.main.ScreenToWorldPoint(lowerRightScreen);
 
-            corners = new Dictionary<Corners, Vector2>();
-            corners.Add(Corners.lUpper, upperLeft);
-            corners.Add(Corners.lLower, lowerLeft);
-            corners.Add(Corners.rUpper, upperRight);
-            corners.Add(Corners.rLower, lowerRight);
+            corners = new Dictionary<Corner, Vector2>();
+            corners.Add(Corner.LeftUpper, upperLeft);
+            corners.Add(Corner.LeftLower, lowerLeft);
+            corners.Add(Corner.RightUpper, upperRight);
+            corners.Add(Corner.RightLower, lowerRight);
         }
 
-        return corners;
+        return corners[corner];
     }
 }

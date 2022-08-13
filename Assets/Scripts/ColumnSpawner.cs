@@ -1,13 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ColumnSpawner : MonoBehaviour
 {
     [SerializeField] private Column _columnPrefab;
-    [SerializeField] private ColumnPool _columnPool;
-    [SerializeField] private Text _scoreText;
+    [SerializeField] private ColumnPool _columnPoolPrefab;
+    [SerializeField] private PickUpSpawner _pickUpSpawner;
     private ColumnPool _columnPoolInstance;
     private GameSettings _gameSettings;
     private int _columnCount = 7;
@@ -21,20 +20,19 @@ public class ColumnSpawner : MonoBehaviour
     {
         _gameSettings = gameSettings;        
         _columnCount = CalculateColumnCount();
-        _columnPoolInstance = Instantiate(_columnPool);
-        _scoreText.text = 0.ToString();
+        _columnPoolInstance = Instantiate(_columnPoolPrefab);
     }
 
     private int CalculateColumnCount()
     {
         int result = 7;
-        result = (int)Mathf.Ceil((CalculateStartPosition().x - Initilizer.GetCorners()[Corners.lUpper].x) / _gameSettings.ColumnInterval);
+        result = (int)Mathf.Ceil((CalculateStartPosition().x - Initilizer.GetCornerPosition(Corner.LeftUpper).x) / _gameSettings.ColumnInterval);
         return result;
     }
 
     private Vector2 CalculateStartPosition()
     {
-        Vector2 result = new Vector2(Initilizer.GetCorners()[Corners.rUpper].x + _gameSettings.ColumnInterval, 0);
+        Vector2 result = new Vector2(Initilizer.GetCornerPosition(Corner.RightUpper).x + _gameSettings.ColumnInterval, 0);
 
         return result;
     }
@@ -56,11 +54,11 @@ public class ColumnSpawner : MonoBehaviour
             Column instance = Instantiate(_columnPrefab);
             instance.transform.position = startPos;
             instance.Init(_gameSettings);
-            //instance.transform.position += Vector3.right * _gameSettings.ColumnInterval * i;
             columns.Add(instance);
             yield return new WaitForSeconds(_gameSettings.ColumnInterval / _gameSettings.GameSpeed);
         }
 
-        _columnPoolInstance.Init(_gameSettings, columns, startPos, CalculateEndPosition(), _scoreText);
+        _columnPoolInstance.Init(_gameSettings, columns, startPos, CalculateEndPosition());
+        _pickUpSpawner.Init(_columnPoolInstance);
     }
 }

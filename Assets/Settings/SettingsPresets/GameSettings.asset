@@ -15,4 +15,7 @@ MonoBehaviour:
   _columnInterval: 10
   _gameSpeed: 7
   _gameDifficulty: 5
-  _windowSize: 7
+  _windowSize: 5
+  _maximumWindowsCount: 3
+  _minimumWindowsCount: 1
+  _innerColumnHeight: 4
