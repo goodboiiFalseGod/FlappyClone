@@ -30,17 +30,13 @@ public class ColumnPool : MonoBehaviour
             {
                 if (column.transform.position.x <= _endPosition.x)
                 {
-                    column.transform.position = RandomPos();
-                    column.ReconstuructColumn();
-                    ColumnRestarted?.Invoke(column.transform.position);
+                    if (column.Restart())
+                    {
+                        ColumnRestarted?.Invoke(column.transform.position);
+                    }                   
+                    
                 }
             }
         }
-    }
-
-    private Vector3 RandomPos()
-    {
-        Vector3 pos = new Vector3(_startPosition.x, UnityEngine.Random.Range(-1f, 1f) * _gameSettings.GameDifficulty);
-        return pos;
     }
 }

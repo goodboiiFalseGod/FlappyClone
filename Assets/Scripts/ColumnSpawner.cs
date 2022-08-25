@@ -7,13 +7,14 @@ public class ColumnSpawner : MonoBehaviour
     [SerializeField] private Column _columnPrefab;
     [SerializeField] private ColumnPool _columnPoolPrefab;
     [SerializeField] private PickUpSpawner _pickUpSpawner;
+    [SerializeField] private TimeManager _timeManager;
     private ColumnPool _columnPoolInstance;
     private GameSettings _gameSettings;
     private int _columnCount = 7;
 
     private void Start()
     {
-        StartCoroutine(SpawnerCoroutine());
+        SpawnerCoroutine();
     }
 
     public void Init(GameSettings gameSettings)
@@ -44,18 +45,18 @@ public class ColumnSpawner : MonoBehaviour
         return result;
     }
 
-    private IEnumerator SpawnerCoroutine()
+    private void SpawnerCoroutine()
     {
         List<Column> columns = new List<Column>();
         Vector2 startPos = CalculateStartPosition();
 
         for (int i = 0; i < _columnCount; i++)
         {
-            Column instance = Instantiate(_columnPrefab);
-            instance.transform.position = startPos;
-            instance.Init(_gameSettings);
+            Column instance = Instantiate(_columnPrefab);            ;
+            instance.Init(_gameSettings, _timeManager, startPos);
+            instance.transform.Translate(Vector2.right * _gameSettings.ColumnInterval * i);
+            instance.AddStartPosition(instance.transform.position);
             columns.Add(instance);
-            yield return new WaitForSeconds(_gameSettings.ColumnInterval / _gameSettings.GameSpeed);
         }
 
         _columnPoolInstance.Init(_gameSettings, columns, startPos, CalculateEndPosition());

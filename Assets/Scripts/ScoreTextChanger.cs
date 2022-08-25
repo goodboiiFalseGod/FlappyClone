@@ -13,11 +13,18 @@ public class ScoreTextChanger : MonoBehaviour
     {
         _scoreText.text = _score.ToString();
         _playerMovement.ScoreZoneEntered += AddScore;
+        _playerMovement.ScoreZoneReEntered += RemoveScore;
     }
 
     private void AddScore()
     {
         _score++;
+        _scoreText.text = _score.ToString();
+    }
+
+    private void RemoveScore()
+    {
+        _score--;
         _scoreText.text = _score.ToString();
     }
 }

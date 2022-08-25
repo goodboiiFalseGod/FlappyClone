@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: PlayerSettings
   m_EditorClassIdentifier: 
   _jumpStrenght: 750
-  _hp: 3
+  _hp: 4
   _jumpCooldown: 0.5
+  _invincibilityTime: 2

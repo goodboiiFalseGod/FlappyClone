@@ -1,11 +1,14 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : MonoBehaviour, IAffectedByTime
 {
     [SerializeField] private PlayerSettings _settings;
     [SerializeField] private GameSettings _gameSettings;
     [SerializeField] private Rigidbody2D _rigidbody;
+    [SerializeField] private TimeManager _timeManager;
 
     private Vector2 _jumpStrenght;
     private float _jumpCooldown;
@@ -16,14 +19,24 @@ public class PlayerMovement : MonoBehaviour
     public event Action ReachedLethalHeight;
     public event Action HittedByObstacle;
     public event Action ScoreZoneEntered;
+    public event Action ScoreZoneReEntered;
 
     private bool _jumpOnCooldown { get => _jumpCurrentCooldown > 0; }
+
+    private Stack<Vector2> _velocitys;
+    private Stack<Vector2> _positions;
+    private bool _isReversing = false;
+    private bool _isReplay = false;
+    private Stack<Vector2> _positionsForReplay;
 
     private void Start()
     {
         _jumpStrenght = _settings.JumpStrenght;
         _jumpCooldown = _settings.JumpCooldown;
         _startPos = CalculateStartPos();
+        _velocitys = new Stack<Vector2>();
+        _positions = new Stack<Vector2>();
+        _timeManager.AddNewAffectedByTime(this);
     }
 
     private Vector2 CalculateStartPos()
@@ -37,20 +50,41 @@ public class PlayerMovement : MonoBehaviour
         HittedByObstacle?.Invoke();
     }
 
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(_isReversing)
+        {
+            ScoreZoneReEntered?.Invoke();
+        }        
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        ScoreZoneEntered?.Invoke();
+        if(!_isReversing)
+        {
+            ScoreZoneEntered?.Invoke();
+        }
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (this.transform.position.y < Initilizer.GetCornerPosition(Corner.LeftLower).y || transform.position.y > Initilizer.GetCornerPosition(Corner.LeftUpper).y)
+        if(_isReplay)
         {
-            _rigidbody.velocity = Vector2.zero;
-            transform.position = _startPos;
-            ReachedLethalHeight?.Invoke();
+            this.transform.position = _positions.Pop();
+            _rigidbody.velocity = _velocitys.Pop();
+            return;
         }
+
+        if (_isReversing)
+        {
+            FrameBack();
+            return;
+        }
+
+        SaveLastFrame();
+
+        CheckInBounds();
 
         transform.position = new Vector3(_startPos.x, transform.position.y);
 
@@ -60,12 +94,52 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (Input.anyKey)
+        if (Input.GetKey(KeyCode.Mouse0))
         {
             _rigidbody.velocity = Vector2.zero;
             _rigidbody.AddForce(_jumpStrenght);
             _jumpCurrentCooldown = _jumpCooldown;
             return;
         }
+    }
+
+    private void CheckInBounds()
+    {
+        if (this.transform.position.y < Initilizer.GetCornerPosition(Corner.LeftLower).y || transform.position.y > Initilizer.GetCornerPosition(Corner.LeftUpper).y)
+        {
+            _rigidbody.velocity = Vector2.zero;
+            transform.position = _startPos;
+            ReachedLethalHeight?.Invoke();
+        }
+    }
+
+    public void SetReversing(bool state)
+    {
+        _isReversing = state;
+    }
+
+    public void FrameBack()
+    {
+        if (_velocitys.Count == 0)
+        {
+            SetReversing(false);
+            return;
+        }
+            
+        _rigidbody.velocity = _velocitys.Pop();
+        transform.position = _positions.Pop(); ;
+    }
+
+    public void SaveLastFrame()
+    {
+        _velocitys.Push(_rigidbody.velocity);
+        _positions.Push(transform.position);
+    }
+
+    public void StartReplay()
+    {
+        _isReplay = true;
+        _velocitys = new Stack<Vector2>(_velocitys.ToArray());
+        _positions = new Stack<Vector2>(_positions.ToArray());
     }
 }
