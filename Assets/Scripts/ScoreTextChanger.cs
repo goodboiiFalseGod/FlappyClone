@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ScoreTextChanger : MonoBehaviour
+public class ScoreTextChanger : MonoBehaviour, IAffectedByTime
 {
     [SerializeField] private Text _scoreText;
     [SerializeField] private PlayerMovement _playerMovement;
@@ -26,5 +26,15 @@ public class ScoreTextChanger : MonoBehaviour
     {
         _score--;
         _scoreText.text = _score.ToString();
+    }
+
+    public void SetReversing(bool state)
+    {
+        return;
+    }
+
+    public void StartReplay()
+    {
+       _score = 0;
     }
 }

@@ -25,6 +25,9 @@ public class PlayerMovement : MonoBehaviour, IAffectedByTime
 
     private Stack<Vector2> _velocitys;
     private Stack<Vector2> _positions;
+    private Stack<Vector2> _velocitysReplay;
+    private Stack<Vector2> _positionsReplay;
+    public Action ReplayOvered;
     private bool _isReversing = false;
     private bool _isReplay = false;
     private Stack<Vector2> _positionsForReplay;
@@ -71,8 +74,9 @@ public class PlayerMovement : MonoBehaviour, IAffectedByTime
     {
         if(_isReplay)
         {
-            this.transform.position = _positions.Pop();
-            _rigidbody.velocity = _velocitys.Pop();
+            this.transform.position = _positionsReplay.Pop();
+            _rigidbody.velocity = _velocitysReplay.Pop();
+            ReplayOvered?.Invoke();
             return;
         }
 
@@ -139,7 +143,7 @@ public class PlayerMovement : MonoBehaviour, IAffectedByTime
     public void StartReplay()
     {
         _isReplay = true;
-        _velocitys = new Stack<Vector2>(_velocitys.ToArray());
-        _positions = new Stack<Vector2>(_positions.ToArray());
+        _velocitysReplay = new Stack<Vector2>(_velocitys.ToArray());
+        _positionsReplay = new Stack<Vector2>(_positions.ToArray());
     }
 }

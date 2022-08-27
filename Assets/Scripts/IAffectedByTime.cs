@@ -6,4 +6,5 @@ public interface IAffectedByTime
 {
     abstract void SetReversing(bool state);
     abstract void StartReplay();
+
 }

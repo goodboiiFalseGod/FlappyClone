@@ -212,12 +212,11 @@ public class Column : MonoBehaviour, IAffectedByTime
         _isReversing = state;
     }
 
-    public void StartReplay()
+    public void StartReplay()   
     {
         _isReplay = true;
         _currentFrame = 0;
         transform.position = _restartNewPositions.First().Value.Item1;
         ReconstuructColumn(_restartNewPositions.First().Value.Item2);
-        _restartNewPositions.Remove(_restartNewPositions.First().Key);
     }
 }

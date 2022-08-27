@@ -79,12 +79,9 @@ public abstract class PickUp : MonoBehaviour, IAffectedByTime
 
     protected void Activate()
     {
-        if(!_isReversing)
-        {
-            Effect();
-            HideSelf();
-            _deactivateFrame = _currentFrame;
-        }
+        Effect();
+        HideSelf();
+        _deactivateFrame = _currentFrame;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -92,6 +89,14 @@ public abstract class PickUp : MonoBehaviour, IAffectedByTime
         if(_isActive && !_isReversing)
         {
             Activate();
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(_isReversing)
+        {
+            ShowSelf();
         }
     }
 
@@ -129,5 +134,6 @@ public abstract class PickUp : MonoBehaviour, IAffectedByTime
     {
         _isReplay = true;
         _currentFrame = 0;
+        HideSelf();
     }
 }
